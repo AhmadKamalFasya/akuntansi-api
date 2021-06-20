@@ -72,7 +72,15 @@ class TransactionController extends Controller
      */
     public function show($id)
     {
-        //
+      $transaction = Transaction::findOrFail($id);
+
+      $response = [
+
+        'message' => 'Detail of Transaction resource',
+        'data' => $transaction
+      ];
+
+      return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -125,6 +133,23 @@ class TransactionController extends Controller
      */
     public function destroy($id)
     {
-        //
+      // Ambil data
+      $transaction = Transaction::findOrFail($id);
+
+      //Jika berhasil hapus data
+      try {
+        $transaction->delete();
+
+        $response = [
+          'message' => 'Transaction Deleted'
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+        
+      } catch (QueryException $e) {
+        return response()->json([
+          'message' => "Failed " . $e->errorInfo
+        ]);
+      }
     }
   }
