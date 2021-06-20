@@ -19,4 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/transactions', [TransactionController::class, 'index']);
+Route::get('/transaction', [TransactionController::class, 'index']);
+Route::post('/transaction', [TransactionController::class, 'store']);
+Route::get('/transaction/{id}', [TransactionController::class, 'show']);
+Route::put('/transaction/{id}', [TransactionController::class, 'update']);
