@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,3 +27,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route::delete('/transaction/{id}', [TransactionController::class, 'destroy']);
 
 Route::resource('/transaction', TransactionController::class)->except(['create', 'edit']);
+
+Route::get('/profile', [ProfileController::class, 'index']);
