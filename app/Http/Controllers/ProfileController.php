@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Profile;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\validator;
+use Symfony\Component\HttpFoundation\Response; 
+
 
 class ProfileController extends Controller
 {
@@ -13,17 +17,17 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $transaction = Transaction::all();
+
+        $profile = Profile::orderBy('name', 'DESC')->get();
+
+        $response = [
+            'message' => 'List of Profile ordered by Id',
+            'data' => $profile
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -44,17 +48,6 @@ class ProfileController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }
