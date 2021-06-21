@@ -36,6 +36,7 @@ class TransactionController extends Controller
     {
       // Proses validasi 
       $validator = Validator::make($request->all(), [
+        'id_profiles' => ['required'],
         'title' => ['required'],
         'amount' => ['required', 'numeric'],
         'type' => ['required', 'in:expense,revenue'], 
@@ -97,6 +98,7 @@ class TransactionController extends Controller
 
       // Proses Validasi
       $validator = Validator::make($request->all(), [
+        'id_profiles' => ['required'],
         'title' => ['required'],
         'amount' => ['required', 'numeric'],
         'type' => ['required', 'in:expense,revenue']

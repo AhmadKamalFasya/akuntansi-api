@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\validator;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response; 
 
 
@@ -21,14 +22,14 @@ class ProfileController extends Controller
     {
 
 
-        $profile = Profile::orderBy('name', 'DESC')->get();
+      $profile = Profile::orderBy('name', 'DESC')->get();
 
-        $response = [
-            'message' => 'List of Profile ordered by Id',
-            'data' => $profile
-        ];
+      $response = [
+        'message' => 'List of Profile ordered by Id',
+        'data' => $profile
+      ];
 
-        return response()->json($response, Response::HTTP_OK);
+      return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -40,31 +41,31 @@ class ProfileController extends Controller
     public function store(Request $request)
     {
         // Proses Validasi
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:25',
-            'email' => 'email:rfc,dns'
-        ]);
+      $validator = Validator::make($request->all(), [
+        'name' => 'required|max:25',
+        'email' => 'email:rfc,dns'
+      ]);
 
         // Jika gagal tampilkan error
-        if($validator->fails()){
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+      if($validator->fails()){
+        return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+      }
 
         // Jika berhasil lakukan query
-        try {
-            $profile = Profile::create($request->all());
+      try {
+        $profile = Profile::create($request->all());
 
-            $response = [
-                'message' => 'Profile Created',
-                'data' => $profile
-            ];
+        $response = [
+          'message' => 'Profile Created',
+          'data' => $profile
+        ];
 
-            return response()->json($response, Response::HTTP_CREATED);
-        } catch (QueryException $e) {
-            return response()->json([
-                'message' => "Failed " . $e->errorInfo
-            ]);
-        }
+        return response()->json($response, Response::HTTP_CREATED);
+      } catch (QueryException $e) {
+        return response()->json([
+          'message' => "Failed " . $e->errorInfo
+        ]);
+      }
     }
 
     /**
@@ -75,8 +76,21 @@ class ProfileController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+
+      $profiles = DB::table('profiles')
+        ->leftJoin('transactions', 'profiles.id', '=', 'transactions.id_profiles')
+        ->select('transactions.*','profiles.*')
+        ->where('profiles.id', '=', $id)
+        ->orderBy('profiles.created_at', 'DESC')
+        ->get();
+
+     $response = [
+      'message' => 'Detail of Profile',
+      'data' => $profiles
+    ];
+
+    return response()->json($response, Response::HTTP_OK);
+  }
 
     /**
      * Update the specified resource in storage.
@@ -100,4 +114,4 @@ class ProfileController extends Controller
     {
         //
     }
-}
+  }
