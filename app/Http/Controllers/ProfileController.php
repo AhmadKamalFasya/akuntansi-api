@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use App\Models\Profile;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\validator;
 use Symfony\Component\HttpFoundation\Response; 
 
@@ -18,7 +20,6 @@ class ProfileController extends Controller
     public function index()
     {
 
-        $transaction = Transaction::all();
 
         $profile = Profile::orderBy('name', 'DESC')->get();
 
@@ -38,7 +39,32 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Proses Validasi
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:25',
+            'email' => 'email:rfc,dns'
+        ]);
+
+        // Jika gagal tampilkan error
+        if($validator->fails()){
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Jika berhasil lakukan query
+        try {
+            $profile = Profile::create($request->all());
+
+            $response = [
+                'message' => 'Profile Created',
+                'data' => $profile
+            ];
+
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => "Failed " . $e->errorInfo
+            ]);
+        }
     }
 
     /**
