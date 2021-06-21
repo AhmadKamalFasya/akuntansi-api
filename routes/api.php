@@ -28,4 +28,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::resource('/transaction', TransactionController::class)->except(['create', 'edit']);
 
-Route::get('/profile', [ProfileController::class, 'index']);
+// Route::get('/profile', [ProfileController::class, 'index']);
+// Route::post('/profile', [ProfileController::class, 'store']);
+// Route::get('/profile/{id}', [ProfileController::class, 'show']);
+// Route::put('/profile/{id}', [ProfileController::class, 'update']);
+// Route::delete('/profile/{id}', [ProfileController::class, 'destroy']);
+// 
+Route::resource('/profile', ProfileController::class)->except(['create', 'edit']);
