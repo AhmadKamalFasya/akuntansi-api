@@ -18,9 +18,8 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-
 
       $profile = Profile::orderBy('name', 'DESC')->get();
 
@@ -40,6 +39,7 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
+
         // Proses Validasi
       $validator = Validator::make($request->all(), [
         'name' => 'required|max:25',
@@ -78,19 +78,19 @@ class ProfileController extends Controller
     {
 
       $profiles = DB::table('profiles')
-        ->leftJoin('transactions', 'profiles.id', '=', 'transactions.id_profiles')
-        ->select('transactions.*','profiles.*')
-        ->where('profiles.id', '=', $id)
-        ->orderBy('profiles.created_at', 'DESC')
-        ->get();
+      ->leftJoin('transactions', 'profiles.id', '=', 'transactions.id_profiles')
+      ->select('transactions.*','profiles.*')
+      ->where('profiles.id', '=', $id)
+      ->orderBy('profiles.created_at', 'DESC')
+      ->get();
 
-     $response = [
-      'message' => 'Detail of Profile',
-      'data' => $profiles
-    ];
+      $response = [
+        'message' => 'Detail of Profile',
+        'data' => $profiles
+      ];
 
-    return response()->json($response, Response::HTTP_OK);
-  }
+      return response()->json($response, Response::HTTP_OK);
+    }
 
     /**
      * Update the specified resource in storage.
@@ -101,7 +101,36 @@ class ProfileController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      // Ambil data
+      $profile = Profile::findOrFail($id);
+
+      // Proses Validasi
+      $validator = Validator::make($request->all(), [
+        'name' => 'required|max:25',
+        'email' => 'required|email:rfc,dns'
+      ]);
+
+      // Jika gagal tampilkan error
+      if ($validator->fails()) {
+        return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+      }
+
+      // Jika berhasil lakukan query update
+      try {
+        $profile->update($request->all());
+
+        $response = [
+          'message' => 'Profile Updated',
+          'data' => $profile
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+      } catch (QueryException $e) {
+        return response()->json([
+          'message' => "FAILED " . $e->errorInfo
+        ]);
+      }
+        
     }
 
     /**
@@ -112,6 +141,22 @@ class ProfileController extends Controller
      */
     public function destroy($id)
     {
-        //
+      // Ambil data
+      $profile = Profile::findOrFail($id);
+
+      try {
+        $profile->delete($id);
+
+        $response = [
+          'message' => 'Profile Deleted',
+          'data' => $profile
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+      } catch (QueryException $e) {
+        return response()->json([
+          'message' => "FAILED " . $e->errorInfo
+        ]);
+      }
     }
   }
